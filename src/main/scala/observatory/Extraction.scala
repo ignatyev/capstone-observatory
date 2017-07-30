@@ -6,10 +6,14 @@ import java.time.LocalDate
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{Encoders, SparkSession}
 
+import scala.language.postfixOps
+
 /**
   * 1st milestone: data extraction
   */
 object Extraction {
+  import org.apache.log4j.{Level, Logger}
+  Logger.getLogger("org.apache.spark").setLevel(Level.WARN)
   val spark: SparkSession =
     SparkSession
       .builder()
@@ -33,10 +37,11 @@ object Extraction {
 
     val stations = spark.read.csv(stationsPath).toDF("stnId", "wbanId", "lat", "lon")
     val temperatures = spark.read.csv(temperaturesPath).toDF("stnId", "wbanId", "month", "day", "temperature")
-    stations.join(temperatures,
-      stations("stnId") === temperatures("stnId") and stations("wbanId") === temperatures("wbanId")
+    stations
+      .filter(($"lat" isNotNull) and ($"lon" isNotNull))
+      .join(temperatures,
+      stations("stnId") <=> temperatures("stnId") and stations("wbanId") <=> temperatures("wbanId")
     )
-      .filter($"lat" =!= "" and $"lon" =!= "")
       .map { row =>
         (LocalDate.of(year, row.getAs[String]("month").toInt, row.getAs[String]("day").toInt),
           Location(row.getAs[String]("lat").toDouble, row.getAs[String]("lon").toDouble),
