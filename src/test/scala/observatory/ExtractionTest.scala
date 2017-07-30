@@ -37,4 +37,10 @@ trait ExtractionTest extends FunSuite with Matchers {
     Array(2.000000000000001.round, 0.0, 27.299999999999997) should
       contain theSameElementsAs List(27.3 +- 0.1, 0.0 +- 0.1, 2.0 +- 0.1)
   }
+
+  test("1 mln avg") {
+    Extraction.locationYearlyAverageRecords(
+      Seq.fill(1000000)((LocalDate.of(2000, 1, 1), Location(0, 0), 0))
+    ) should contain theSameElementsAs Seq((Location(0,0),0))
+  }
 }
