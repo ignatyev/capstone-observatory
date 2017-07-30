@@ -2,14 +2,11 @@ package observatory
 
 import java.time.LocalDate
 
-import org.junit.runner.RunWith
 import org.scalatest.{FunSuite, Matchers}
-import org.scalatest.junit.JUnitRunner
 
 trait ExtractionTest extends FunSuite with Matchers {
   test("locateTemperatures") {
-    val rootTest = "src/test/resources/"
-    Extraction.locateTemperatures(2000, rootTest + "stations.csv", rootTest + "2000.csv") should
+    Extraction.locateTemperatures(2000, "/stations.csv", "/2000.csv") should
       contain theSameElementsAs Iterable(
       (LocalDate.of(2000, 1, 1), Location(-21.23, -175.15), 0),
       (LocalDate.of(2000, 2, 2), Location(-21.23, -175.15), 5)

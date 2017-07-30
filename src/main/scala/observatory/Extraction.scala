@@ -1,9 +1,10 @@
 package observatory
 
+import java.nio.file.Paths
 import java.time.LocalDate
 
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.{Encoders, Row, SparkSession}
+import org.apache.spark.sql.{Encoders, SparkSession}
 
 /**
   * 1st milestone: data extraction
@@ -27,8 +28,11 @@ object Extraction {
     * @return A sequence containing triplets (date, location, temperature)
     */
   def locateTemperatures(year: Int, stationsFile: String, temperaturesFile: String): Iterable[(LocalDate, Location, Double)] = {
-    val stations = spark.read.csv(stationsFile).toDF("stnId", "wbanId", "lat", "lon")
-    val temperatures = spark.read.csv(temperaturesFile).toDF("stnId", "wbanId", "month", "day", "temperature")
+    val stationsPath = Paths.get(getClass.getResource(stationsFile).toURI).toString
+    val temperaturesPath = Paths.get(getClass.getResource(temperaturesFile).toURI).toString
+
+    val stations = spark.read.csv(stationsPath).toDF("stnId", "wbanId", "lat", "lon")
+    val temperatures = spark.read.csv(temperaturesPath).toDF("stnId", "wbanId", "month", "day", "temperature")
     stations.join(temperatures,
       stations("stnId") === temperatures("stnId") and stations("wbanId") === temperatures("wbanId")
     )
