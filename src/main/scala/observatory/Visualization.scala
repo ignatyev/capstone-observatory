@@ -1,6 +1,6 @@
 package observatory
 
-import java.lang.Math.{abs, acos, cos, sin}
+import java.lang.Math._
 
 import com.sksamuel.scrimage.{Image, Pixel}
 
@@ -24,11 +24,12 @@ object Visualization {
 
   private def squared(d: Double) = d * d
 
-  private def distance(p: Location, q: Location): Double = {
+  private[observatory] def distance(p: Location, q: Location): Double = {
     val (fi1, lambda1) = (p.lat, p.lon)
     val (fi2, lambda2) = (q.lat, q.lon)
     abs(
-      acos(sin(fi1) * sin(fi2) + cos(fi1) * cos(fi2) * cos(lambda1 - lambda2)) * EARTH_RADIUS_KM
+      acos(sin(toRadians(fi1)) * sin(toRadians(fi2)) +
+        cos(toRadians(fi1)) * cos(toRadians(fi2)) * cos(abs(toRadians(lambda1 - lambda2)))) * EARTH_RADIUS_KM
     )
   }
 
@@ -56,13 +57,15 @@ object Visualization {
   }
 
   private def linerp(value: Double, lower: (Double, Color), upper: (Double, Color)): Color = {
-    if (lower == upper) return lower._2
-    val (x0, y0) = lower
-    val (x1, y1) = upper
-    val red = (y0.red * (x1 - value) + y1.red * (value - x0)) / (x1 - x0)
-    val green = (y0.green * (x1 - value) + y1.green * (value - x0)) / (x1 - x0)
-    val blue = (y0.blue * (x1 - value) + y1.blue * (value - x0)) / (x1 - x0)
-    Color(red.round.toInt, green.round.toInt, blue.round.toInt)
+    if (lower == upper) lower._2
+    else {
+      val (x0, y0) = lower
+      val (x1, y1) = upper
+      val red = (y0.red * (x1 - value) + y1.red * (value - x0)) / (x1 - x0)
+      val green = (y0.green * (x1 - value) + y1.green * (value - x0)) / (x1 - x0)
+      val blue = (y0.blue * (x1 - value) + y1.blue * (value - x0)) / (x1 - x0)
+      Color(red.round.toInt, green.round.toInt, blue.round.toInt)
+    }
   }
 
   /**
@@ -72,8 +75,8 @@ object Visualization {
     */
   def visualize(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)]): Image = {
     val colorMap = for {
-      lat <- -180 to 180
-      lon <- 90 to -90 by -1
+      lat <- -180 until 180
+      lon <- 90 until -90 by -1
     } yield interpolateColor(colors, predictTemperature(temperatures, Location(lat, lon)))
     Image(360, 180, colorMap.map(color => Pixel(color.red, color.green, color.blue, 255)).toArray)
   }
