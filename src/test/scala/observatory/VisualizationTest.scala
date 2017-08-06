@@ -64,7 +64,7 @@ trait VisualizationTest extends FunSuite with Checkers with Matchers {
   }
 
   ignore("visualize") {
-    val colors = Seq((60d, Color(255, 255, 255)), (32d, Color(255, 0, 0)))
-    visualize(Seq((Location(0, 0), 20), (Location(100, 100), 150)), colors).output("img.png")
+    val colors = Seq((60d, Color(255, 255, 255)), (32d, Color(0, 255, 0)))
+    visualize(Seq((Location(0, 0), 20), (Location(-50, -50), 40), (Location(100, 100), 150)), colors).output("img.png")
   }
 }

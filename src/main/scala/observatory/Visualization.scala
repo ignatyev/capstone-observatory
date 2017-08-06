@@ -75,8 +75,8 @@ object Visualization {
     */
   def visualize(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)]): Image = {
     val colorMap = for {
-      lat <- -180 until 180
-      lon <- 90 until -90 by -1
+      lat <- 90 until -90 by -1
+      lon <- -180 until 180
     } yield interpolateColor(colors, predictTemperature(temperatures, Location(lat, lon)))
     Image(360, 180, colorMap.map(color => Pixel(color.red, color.green, color.blue, 255)).toArray)
   }
