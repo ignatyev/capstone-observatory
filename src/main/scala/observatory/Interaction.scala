@@ -2,7 +2,8 @@ package observatory
 
 import java.lang.Math._
 
-import com.sksamuel.scrimage.Image
+import com.sksamuel.scrimage.{Image, Pixel}
+import observatory.Visualization.{interpolateColor, predictTemperature}
 
 /**
   * 3rd milestone: interactive visualization
@@ -32,7 +33,11 @@ object Interaction {
     * @return A 256×256 image showing the contents of the tile defined by `x`, `y` and `zooms`
     */
   def tile(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int): Image = {
-    ???
+    val colorMap = for {
+      x <- 0 until 256
+      y <- 0 until 256
+    } yield interpolateColor(colors, predictTemperature(temperatures, tileLocation(256, x, y)))
+    Image(256, 256, colorMap.map(color => Pixel(color.red, color.green, color.blue, 127)).toArray)
     //val location = tileLocation(zoom, x, y)
   }
 
@@ -47,7 +52,12 @@ object Interaction {
     yearlyData: Iterable[(Int, Data)],
     generateImage: (Int, Int, Int, Int, Data) => Unit
   ): Unit = {
-    ???
+    for {
+      zoom <- 0 to 3
+      x <- 0 to zoom
+      y <- 0 to zoom
+      (year, data) <- yearlyData
+    } generateImage(year, zoom, x, y, data)
   }
 
 }
