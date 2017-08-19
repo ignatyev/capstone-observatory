@@ -3,6 +3,7 @@ package observatory
 import java.nio.file.Paths
 import java.time.LocalDate
 
+import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.{Encoders, SparkSession}
 
 import scala.collection.parallel.mutable.ParTrieMap
@@ -13,7 +14,7 @@ import scala.language.postfixOps
   */
 object Extraction {
 
-  //  Logger.getLogger("org.apache.spark").setLevel(Level.WARN)
+    Logger.getLogger("org.apache.spark").setLevel(Level.WARN)
 
   /**
     * @param year             Year number

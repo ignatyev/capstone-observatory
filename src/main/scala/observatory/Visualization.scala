@@ -15,14 +15,14 @@ object Visualization {
     * @return The predicted temperature at `location`
     */
   def predictTemperature(temperatures: Iterable[(Location, Double)], location: Location): Double =
-    temperatures.par.find { case (loc, _) => distance(location, loc) < 1 }.map(_._2).getOrElse {
-      temperatures.par.map { case (loc, temp) => temp / squared(distance(location, loc)) }.sum /
-        temperatures.par.map { case (loc, _) => 1 / squared(distance(location, loc)) }.sum
+    temperatures.find { case (loc, _) => distance(location, loc) < 1 }.map(_._2).getOrElse {
+      temperatures.map { case (loc, temp) => temp / sqr(distance(location, loc)) }.sum /
+        temperatures.map { case (loc, _) => 1 / sqr(distance(location, loc)) }.sum
     }
 
   private val EARTH_RADIUS_KM = 6371
 
-  private def squared(d: Double) = d * d
+  private def sqr(d: Double) = d * d
 
   private[observatory] def distance(p: Location, q: Location): Double = {
     val (fi1, lambda1) = (p.lat, p.lon)
